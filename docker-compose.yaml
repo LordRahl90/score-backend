@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: sybo
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: docker
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: sybo_games
+
+    networks:
+      - sybo_net
+
+  mysql:
+    container_name: sybo_db
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: sybo_games
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    
+    healthcheck: # check the healthiness with the following configuration
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '--user=user', '--password=password']
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+    networks:
+      - sybo_net
+    
+
+networks:
+  sybo_net:
+    driver: bridge
+
+
+

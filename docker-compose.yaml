@@ -1,11 +1,9 @@
 version: '3.7'
 
 services:
-  app:
+  backend:
     container_name: sybo
-    build:
-      context: . 
-      dockerfile: Dockerfile
+    image: lordrahl/scores-backend:main
     restart: unless-stopped
     ports:
       - 8080:8080
@@ -20,6 +18,20 @@ services:
       DB_USER: user
       DB_PASSWORD: password
       DB_NAME: sybo_games
+
+    networks:
+      - sybo_net
+
+  frontend:
+    container_name: sybo_fe
+    image: lordrahl/scores-frontend:main
+    restart: unless-stopped
+    ports:
+      - 3000:80
+    depends_on:
+      - backend
+    environment:
+      BACKEND: "backend:8000"
 
     networks:
       - sybo_net

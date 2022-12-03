@@ -2,7 +2,6 @@ package servers
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -52,8 +51,6 @@ func handleRequest(t *testing.T, method, path string, payload []byte) *httptest.
 	}
 	require.NoError(t, err)
 	server.Router.ServeHTTP(w, req)
-
-	fmt.Printf("\n\nRes: %s\n\n", w.Body.String())
 	return w
 }
 
@@ -61,7 +58,7 @@ func setupTestDB() (*gorm.DB, error) {
 	env := os.Getenv("ENVIRONMENT")
 	dsn := "root:@tcp(127.0.0.1:3306)/sybo?charset=utf8mb4&parseTime=True&loc=Local"
 	if env == "cicd" {
-		dsn = "user:password@tcp(127.0.0.1:33306)/sybo?charset=utf8mb4&parseTime=True&loc=Local"
+		dsn = "user:password@tcp(127.0.0.1:33306)/scores?charset=utf8mb4&parseTime=True&loc=Local"
 	}
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{})
 }
